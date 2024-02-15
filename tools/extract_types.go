@@ -226,7 +226,7 @@ func main() {
 	for _, key := range keys {
 		value := sampleRequests[key]
 		log.Info("processing request " + key)
-		resp, err := http.Get("https://transparency.entsoe.eu/api?securityToken=" + apiKey + "&" + value)
+		resp, err := http.Get("https://web-api.tp.entsoe.eu/api?securityToken=" + apiKey + "&" + value)
 		if err != nil {
 			log.Fatal(err)
 		}

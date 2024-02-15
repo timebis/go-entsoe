@@ -927,7 +927,7 @@ func (c *EntsoeClient) requestCriticalNetworkElementMarketDocument(params url.Va
 }
 
 func (c *EntsoeClient) sendRequest(paramStr string) ([]byte, error) {
-	resp, err := http.Get("https://transparency.entsoe.eu/api?securityToken=" + c.apiKey + "&" + paramStr)
+	resp, err := http.Get("https://web-api.tp.entsoe.eu/api?securityToken=" + c.apiKey + "&" + paramStr)
 	if err != nil {
 		return nil, err
 	}
