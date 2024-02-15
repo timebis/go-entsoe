@@ -1,4 +1,4 @@
-module github.com/energy-forecast/go-entsoe
+module github.com/tomdegryse/go-entsoe
 
 go 1.16
 
