@@ -4,7 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"os/exec"
@@ -232,7 +232,7 @@ func main() {
 		}
 		body := resp.Body
 		defer body.Close()
-		bodyBytes, err := ioutil.ReadAll(body)
+		bodyBytes, err := io.ReadAll(body)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -308,7 +308,7 @@ func readZipFile(zf *zip.File) ([]byte, error) {
 		log.Fatal(err)
 	}
 	defer f.Close()
-	return ioutil.ReadAll(f)
+	return io.ReadAll(f)
 }
 
 func processFileContent(fileName string, content []byte) string {
@@ -320,7 +320,7 @@ func processFileContent(fileName string, content []byte) string {
 	documentType := matches[1]
 	os.MkdirAll(documentType, os.ModePerm)
 
-	err := ioutil.WriteFile(filepath.Join(documentType, fileName), content, 0644)
+	err := os.WriteFile(filepath.Join(documentType, fileName), content, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}

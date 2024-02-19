@@ -5,7 +5,7 @@ package goentsoe
 import (
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -933,7 +933,7 @@ func (c *EntsoeClient) sendRequest(paramStr string) ([]byte, error) {
 	}
 	body := resp.Body
 	defer body.Close()
-	bodyBytes, err := ioutil.ReadAll(body)
+	bodyBytes, err := io.ReadAll(body)
 	if err != nil {
 		return nil, err
 	}
