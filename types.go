@@ -1,419 +1,369 @@
 package goentsoe
 
-import "encoding/xml"
+import "time"
 
-type GLMarketDocument struct {
-	XMLName                     xml.Name `xml:"GL_MarketDocument"`
-	Text                        string   `xml:",chardata"`
-	Xmlns                       string   `xml:"xmlns,attr"`
-	MRID                        string   `xml:"mRID"`                // 96f67aa8277a444087f06c96d...
-	RevisionNumber              string   `xml:"revisionNumber"`      // 1, 1, 1, 1, 1, 1, 1, 1, 1...
-	Type                        string   `xml:"type"`                // A65, A65, A65, A65, A65, ...
-	ProcessProcessType          string   `xml:"process.processType"` // A16, A01, A31, A32, A33, ...
-	SenderMarketParticipantMRID struct {
-		Text         string `xml:",chardata"` // 10X1001A1001A450, 10X1001...
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"sender_MarketParticipant.mRID"`
-	SenderMarketParticipantMarketRoleType string `xml:"sender_MarketParticipant.marketRole.type"` // A32, A32, A32, A32, A32, ...
-	ReceiverMarketParticipantMRID         struct {
-		Text         string `xml:",chardata"` // 10X1001A1001A450, 10X1001...
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"receiver_MarketParticipant.mRID"`
-	ReceiverMarketParticipantMarketRoleType string `xml:"receiver_MarketParticipant.marketRole.type"` // A33, A33, A33, A33, A33, ...
-	CreatedDateTime                         string `xml:"createdDateTime"`                            // 2024-02-15T21:18:02Z, 202...
-	TimePeriodTimeInterval                  struct {
-		Text  string `xml:",chardata"`
-		Start string `xml:"start"` // 2015-12-31T23:00Z, 2015-1...
-		End   string `xml:"end"`   // 2016-12-31T23:00Z, 2016-1...
-	} `xml:"time_Period.timeInterval"`
-	TimeSeries []struct {
-		Text                     string `xml:",chardata"`
-		MRID                     string `xml:"mRID"`              // 1, 2, 3, 4, 5, 6, 7, 8, 9...
-		BusinessType             string `xml:"businessType"`      // A04, A04, A04, A04, A04, ...
-		ObjectAggregation        string `xml:"objectAggregation"` // A01, A01, A01, A01, A01, ...
-		OutBiddingZoneDomainMRID struct {
-			Text         string `xml:",chardata"` // 10YCZ-CEPS-----N, 10YCZ-C...
-			CodingScheme string `xml:"codingScheme,attr"`
-		} `xml:"outBiddingZone_Domain.mRID"`
-		QuantityMeasureUnitName string `xml:"quantity_Measure_Unit.name"` // MAW, MAW, MAW, MAW, MAW, ...
-		CurveType               string `xml:"curveType"`                  // A01, A01, A01, A01, A01, ...
-		Period                  struct {
-			Text         string `xml:",chardata"`
-			TimeInterval struct {
-				Text  string `xml:",chardata"`
-				Start string `xml:"start"` // 2015-12-31T23:00Z, 2016-0...
-				End   string `xml:"end"`   // 2016-01-23T11:00Z, 2016-0...
-			} `xml:"timeInterval"`
-			Resolution string `xml:"resolution"` // PT60M, PT60M, PT60M, PT60...
-			Point      []struct {
-				Text     string `xml:",chardata"`
-				Position string `xml:"position"` // 1, 2, 3, 4, 5, 6, 7, 8, 9...
-				Quantity string `xml:"quantity"` // 5872, 5784, 5690, 5604, 5...
-			} `xml:"Point"`
-		} `xml:"Period"`
-		InBiddingZoneDomainMRID struct {
-			Text         string `xml:",chardata"` // 10YCZ-CEPS-----N, 10YCZ-C...
-			CodingScheme string `xml:"codingScheme,attr"`
-		} `xml:"inBiddingZone_Domain.mRID"`
-		MktPSRType struct {
-			Text                                        string `xml:",chardata"`
-			PsrType                                     string `xml:"psrType"` // B16, B02, B02, B02, B02, ...
-			VoltagePowerSystemResourcesHighVoltageLimit struct {
-				Text string `xml:",chardata"` // 400, 400, 400, 400, 110, ...
-				Unit string `xml:"unit,attr"`
-			} `xml:"voltage_PowerSystemResources.highVoltageLimit"`
-			PowerSystemResources struct {
-				Text string `xml:",chardata"`
-				MRID struct {
-					Text         string `xml:",chardata"` // 27W-GU-ECHVG1--C, 27W-GU-...
-					CodingScheme string `xml:"codingScheme,attr"`
-				} `xml:"mRID"`
-				Name string `xml:"name"` // ECHV_G1____, ECHV_G2____,...
-			} `xml:"PowerSystemResources"`
-		} `xml:"MktPSRType"`
-		RegisteredResourceMRID struct {
-			Text         string `xml:",chardata"` // 27W-PU-EPC1----Y, 27W-PU-...
-			CodingScheme string `xml:"codingScheme,attr"`
-		} `xml:"registeredResource.mRID"`
-		RegisteredResourceName string `xml:"registeredResource.name"` // EPC1_______, EME3_______,...
-	} `xml:"TimeSeries"`
-}
-type AcknowledgementMarketDocument struct {
-	XMLName                     xml.Name `xml:"Acknowledgement_MarketDocument"`
-	Text                        string   `xml:",chardata"`
-	Xmlns                       string   `xml:"xmlns,attr"`
-	MRID                        string   `xml:"mRID"`            // 7b8f04c5-5bc1-4, 91dd0eed...
-	CreatedDateTime             string   `xml:"createdDateTime"` // 2024-02-15T21:18:10Z, 202...
-	SenderMarketParticipantMRID struct {
-		Text         string `xml:",chardata"` // 10X1001A1001A450, 10X1001...
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"sender_MarketParticipant.mRID"`
-	SenderMarketParticipantMarketRoleType string `xml:"sender_MarketParticipant.marketRole.type"` // A32, A32, A32, A32, A32, ...
-	ReceiverMarketParticipantMRID         struct {
-		Text         string `xml:",chardata"` // 10X1001A1001A450, 10X1001...
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"receiver_MarketParticipant.mRID"`
-	ReceiverMarketParticipantMarketRoleType string `xml:"receiver_MarketParticipant.marketRole.type"` // A39, A39, A39, A39, A39, ...
-	ReceivedMarketDocumentCreatedDateTime   string `xml:"received_MarketDocument.createdDateTime"`    // 2024-02-15T21:18:10Z, 202...
-	Reason                                  struct {
-		Chardata string `xml:",chardata"`
-		Code     string `xml:"code"` // 999, 999, 999, 999, 999, ...
-		Text     string `xml:"text"` // No matching data found fo...
-	} `xml:"Reason"`
-}
-type PublicationMarketDocument struct {
-	XMLName                     xml.Name `xml:"Publication_MarketDocument"`
-	Text                        string   `xml:",chardata"`
-	Xmlns                       string   `xml:"xmlns,attr"`
-	MRID                        string   `xml:"mRID"`           // 038279bfceaf44df9b74fc7ba...
-	RevisionNumber              string   `xml:"revisionNumber"` // 1, 1, 1, 1, 1, 1, 1, 1, 1...
-	Type                        string   `xml:"type"`           // A44, A25, A25, A09, A11, ...
-	SenderMarketParticipantMRID struct {
-		Text         string `xml:",chardata"` // 10X1001A1001A450, 10X1001...
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"sender_MarketParticipant.mRID"`
-	SenderMarketParticipantMarketRoleType string `xml:"sender_MarketParticipant.marketRole.type"` // A32, A32, A32, A32, A32, ...
-	ReceiverMarketParticipantMRID         struct {
-		Text         string `xml:",chardata"` // 10X1001A1001A450, 10X1001...
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"receiver_MarketParticipant.mRID"`
-	ReceiverMarketParticipantMarketRoleType string `xml:"receiver_MarketParticipant.marketRole.type"` // A33, A33, A33, A33, A33, ...
-	CreatedDateTime                         string `xml:"createdDateTime"`                            // 2024-02-15T21:18:18Z, 202...
-	PeriodTimeInterval                      struct {
-		Text  string `xml:",chardata"`
-		Start string `xml:"start"` // 2015-12-31T23:00Z, 2015-1...
-		End   string `xml:"end"`   // 2016-12-31T23:00Z, 2016-1...
-	} `xml:"period.timeInterval"`
-	TimeSeries []struct {
-		Text         string `xml:",chardata"`
-		MRID         string `xml:"mRID"`         // 1, 2, 3, 4, 5, 6, 7, 8, 9...
-		BusinessType string `xml:"businessType"` // A62, A62, A62, A62, A62, ...
-		InDomainMRID struct {
-			Text         string `xml:",chardata"` // 10YCZ-CEPS-----N, 10YCZ-C...
-			CodingScheme string `xml:"codingScheme,attr"`
-		} `xml:"in_Domain.mRID"`
-		OutDomainMRID struct {
-			Text         string `xml:",chardata"` // 10YCZ-CEPS-----N, 10YCZ-C...
-			CodingScheme string `xml:"codingScheme,attr"`
-		} `xml:"out_Domain.mRID"`
-		CurrencyUnitName     string `xml:"currency_Unit.name"`      // EUR, EUR, EUR, EUR, EUR, ...
-		PriceMeasureUnitName string `xml:"price_Measure_Unit.name"` // MWH, MWH, MWH, MWH, MWH, ...
-		CurveType            string `xml:"curveType"`               // A01, A01, A01, A01, A01, ...
-		Period               struct {
-			Text         string `xml:",chardata"`
-			TimeInterval struct {
-				Text  string `xml:",chardata"`
-				Start string `xml:"start"` // 2015-12-31T23:00Z, 2016-0...
-				End   string `xml:"end"`   // 2016-01-01T23:00Z, 2016-0...
-			} `xml:"timeInterval"`
-			Resolution string `xml:"resolution"` // PT60M, PT60M, PT60M, PT60...
-			Point      []struct {
-				Text        string `xml:",chardata"`
-				Position    string `xml:"position"`     // 1, 2, 3, 4, 5, 6, 7, 8, 9...
-				PriceAmount string `xml:"price.amount"` // 16.50, 15.50, 14.00, 10.0...
-				Quantity    string `xml:"quantity"`     // 226, 87, 104, 189, 217, 8...
-			} `xml:"Point"`
-		} `xml:"Period"`
-		AuctionType                                              string `xml:"auction.type"`                                               // A01, A01, A01, A01, A01, ...
-		ContractMarketAgreementType                              string `xml:"contract_MarketAgreement.type"`                              // A01, A01, A01, A01, A01, ...
-		QuantityMeasureUnitName                                  string `xml:"quantity_Measure_Unit.name"`                                 // MAW, MAW, MAW, MAW, MAW, ...
-		AuctionMRID                                              string `xml:"auction.mRID"`                                               // CP_A_Hourly_SK-UA, CP_A_D...
-		AuctionCategory                                          string `xml:"auction.category"`                                           // A04, A04, A01, A01, A01, ...
-		ClassificationSequenceAttributeInstanceComponentPosition string `xml:"classificationSequence_AttributeInstanceComponent.position"` // 1, 1
-	} `xml:"TimeSeries"`
-}
-type CriticalNetworkElementMarketDocument struct {
-	XMLName                                 xml.Name `xml:"CriticalNetworkElement_MarketDocument"`
-	Text                                    string   `xml:",chardata"`
-	Xmlns                                   string   `xml:"xmlns,attr"`
-	MRID                                    string   `xml:"mRID"`                                       // 4fd5c99e8b4044b3aaba20d14...
-	RevisionNumber                          string   `xml:"revisionNumber"`                             // 1
-	Type                                    string   `xml:"type"`                                       // B11
-	ProcessProcessType                      string   `xml:"process.processType"`                        // A01
-	SenderMarketParticipantMRID             string   `xml:"sender_MarketParticipant.mRID"`              // 10X1001A1001A450
-	SenderMarketParticipantMarketRoleType   string   `xml:"sender_MarketParticipant.marketRole.type"`   // A32
-	ReceiverMarketParticipantMRID           string   `xml:"receiver_MarketParticipant.mRID"`            // 10X1001A1001A450
-	ReceiverMarketParticipantMarketRoleType string   `xml:"receiver_MarketParticipant.marketRole.type"` // A33
-	CreatedDateTime                         string   `xml:"createdDateTime"`                            // 2024-02-15T21:18:55Z
-	TimePeriodTimeInterval                  struct {
-		Text  string `xml:",chardata"`
-		Start string `xml:"start"` // 2015-12-31T23:00Z
-		End   string `xml:"end"`   // 2016-01-02T23:00Z
-	} `xml:"time_Period.timeInterval"`
-	DomainMRID string `xml:"domain.mRID"` // 10YDOM-REGION-1V
-	TimeSeries []struct {
-		Text         string `xml:",chardata"`
-		MRID         string `xml:"mRID"`         // 1, 2
-		BusinessType string `xml:"businessType"` // B39, B39
-		CurveType    string `xml:"curveType"`    // A01, A01
-		Period       struct {
-			Text         string `xml:",chardata"`
-			TimeInterval struct {
-				Text  string `xml:",chardata"`
-				Start string `xml:"start"` // 2015-12-31T23:00Z, 2016-0...
-				End   string `xml:"end"`   // 2016-01-01T23:00Z, 2016-0...
-			} `xml:"timeInterval"`
-			Resolution string `xml:"resolution"` // PT60M, PT60M
-			Point      []struct {
-				Text                 string `xml:",chardata"`
-				Position             string `xml:"position"` // 1, 2, 3, 4, 5, 6, 7, 8, 9...
-				ConstraintTimeSeries []struct {
-					Text                        string `xml:",chardata"`
-					MRID                        string `xml:"mRID"`                           // 14648370000, 12144770000,...
-					BusinessType                string `xml:"businessType"`                   // B09, B09, B09, B09, B09, ...
-					QuantityMeasurementUnitName string `xml:"quantity_Measurement_Unit.name"` // MAW, MAW, MAW, MAW, MAW, ...
-					PTDFMeasurementUnitName     string `xml:"pTDF_Measurement_Unit.name"`     // MAW, MAW, MAW, MAW, MAW, ...
-					MonitoredRegisteredResource struct {
-						Text                                                string `xml:",chardata"`
-						FlowBasedStudyDomainMRID                            string `xml:"flowBasedStudy_Domain.mRID"`                              // 10YDOM-REGION-1V, 10YDOM-...
-						FlowBasedStudyDomainFlowBasedMarginQuantityQuantity string `xml:"flowBasedStudy_Domain.flowBasedMargin_Quantity.quantity"` // 756, 760, 417, 537, 1116,...
-						PTDFDomain                                          []struct {
-							Text                 string `xml:",chardata"`
-							MRID                 string `xml:"mRID"`                   // 10YBE----------2, 10Y1001...
-							PTDFQuantityQuantity string `xml:"pTDF_Quantity.quantity"` // 0.00767, 0.07408, 0.03358...
-						} `xml:"PTDF_Domain"`
-					} `xml:"Monitored_RegisteredResource"`
-				} `xml:"Constraint_TimeSeries"`
-			} `xml:"Point"`
-		} `xml:"Period"`
-	} `xml:"TimeSeries"`
-}
-type TransmissionNetworkMarketDocument struct {
-	XMLName                     xml.Name `xml:"TransmissionNetwork_MarketDocument"`
-	Text                        string   `xml:",chardata"`
-	Xmlns                       string   `xml:"xmlns,attr"`
-	MRID                        string   `xml:"mRID"`                // 9a9a63ca16984725bbe440e26...
-	RevisionNumber              string   `xml:"revisionNumber"`      // 1
-	Type                        string   `xml:"type"`                // A92
-	ProcessProcessType          string   `xml:"process.processType"` // A16
-	CreatedDateTime             string   `xml:"createdDateTime"`     // 2024-02-15T21:19:19Z
-	SenderMarketParticipantMRID struct {
-		Text         string `xml:",chardata"` // 10X1001A1001A450
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"sender_MarketParticipant.mRID"`
-	SenderMarketParticipantMarketRoleType string `xml:"sender_MarketParticipant.marketRole.type"` // A32
-	ReceiverMarketParticipantMRID         struct {
-		Text         string `xml:",chardata"` // 10X1001A1001A450
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"receiver_MarketParticipant.mRID"`
-	ReceiverMarketParticipantMarketRoleType string `xml:"receiver_MarketParticipant.marketRole.type"` // A33
-	PeriodTimeInterval                      struct {
-		Text  string `xml:",chardata"`
-		Start string `xml:"start"` // 2016-01-01T00:00Z
-		End   string `xml:"end"`   // 2017-01-01T00:00Z
-	} `xml:"period.timeInterval"`
-	TimeSeries []struct {
-		Text         string `xml:",chardata"`
-		MRID         string `xml:"mRID"`         // 1, 2, 3, 4, 5, 6, 7, 8, 9...
-		BusinessType string `xml:"businessType"` // B03, B03, B03, B03, B03, ...
-		InDomainMRID struct {
-			Text         string `xml:",chardata"` // 10YCZ-CEPS-----N, 10YCZ-C...
-			CodingScheme string `xml:"codingScheme,attr"`
-		} `xml:"in_Domain.mRID"`
-		OutDomainMRID struct {
-			Text         string `xml:",chardata"` // 10YCZ-CEPS-----N, 10YCZ-C...
-			CodingScheme string `xml:"codingScheme,attr"`
-		} `xml:"out_Domain.mRID"`
-		CurveType string `xml:"curveType"` // A01, A01, A01, A01, A01, ...
-		Period    struct {
-			Text         string `xml:",chardata"`
-			TimeInterval struct {
-				Text  string `xml:",chardata"`
-				Start string `xml:"start"` // 2016-01-01T00:00Z, 2016-0...
-				End   string `xml:"end"`   // 2016-02-01T00:00Z, 2016-0...
-			} `xml:"timeInterval"`
-			Resolution string `xml:"resolution"` // P1M, P1M, P1M, P1M, P1M, ...
-			Point      struct {
-				Text     string `xml:",chardata"`
-				Position string `xml:"position"` // 1, 1, 1, 1, 1, 1, 1, 1, 1...
-			} `xml:"Point"`
-		} `xml:"Period"`
-	} `xml:"TimeSeries"`
-}
+type Parameter string
 
-type BalancingMarketDocument struct {
-	XMLName                     xml.Name `xml:"Balancing_MarketDocument"`
-	Text                        string   `xml:",chardata"`
-	Xmlns                       string   `xml:"xmlns,attr"`
-	MRID                        string   `xml:"mRID"`                // 350372336d334159b576d8b0e...
-	RevisionNumber              string   `xml:"revisionNumber"`      // 1, 1, 1, 1, 1, 1, 1, 1, 1...
-	Type                        string   `xml:"type"`                // A86, A85, A86, A86, A87, ...
-	ProcessProcessType          string   `xml:"process.processType"` // A16, A16, A16, A16, A16, ...
-	SenderMarketParticipantMRID struct {
-		Text         string `xml:",chardata"` // 10X1001A1001A450, 10X1001...
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"sender_MarketParticipant.mRID"`
-	SenderMarketParticipantMarketRoleType string `xml:"sender_MarketParticipant.marketRole.type"` // A32, A32, A32, A32, A32, ...
-	ReceiverMarketParticipantMRID         struct {
-		Text         string `xml:",chardata"` // 10X1001A1001A450, 10X1001...
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"receiver_MarketParticipant.mRID"`
-	ReceiverMarketParticipantMarketRoleType string `xml:"receiver_MarketParticipant.marketRole.type"` // A33, A33, A33, A33, A33, ...
-	CreatedDateTime                         string `xml:"createdDateTime"`                            // 2024-02-15T21:19:58Z, 202...
-	AreaDomainMRID                          struct {
-		Text         string `xml:",chardata"` // 10YCZ-CEPS-----N, 10YCZ-C...
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"area_Domain.mRID"`
-	PeriodTimeInterval struct {
-		Text  string `xml:",chardata"`
-		Start string `xml:"start"` // 2019-12-19T00:00Z, 2015-1...
-		End   string `xml:"end"`   // 2019-12-19T00:10Z, 2016-1...
-	} `xml:"period.timeInterval"`
-	TimeSeries []struct {
-		Text                    string `xml:",chardata"`
-		MRID                    string `xml:"mRID"`                       // 1, 1, 2, 3, 4, 5, 6, 7, 8...
-		BusinessType            string `xml:"businessType"`               // B33, A19, A19, A19, A19, ...
-		FlowDirectionDirection  string `xml:"flowDirection.direction"`    // A02, A02, A01, A02, A01, ...
-		QuantityMeasureUnitName string `xml:"quantity_Measure_Unit.name"` // MAW, MWH, MWH, MWH, MWH, ...
-		CurveType               string `xml:"curveType"`                  // A01, A01, A01, A01, A01, ...
-		Period                  struct {
-			Text         string `xml:",chardata"`
-			TimeInterval struct {
-				Text  string `xml:",chardata"`
-				Start string `xml:"start"` // 2019-12-19T00:00Z, 2015-1...
-				End   string `xml:"end"`   // 2019-12-19T00:10Z, 2016-0...
-			} `xml:"timeInterval"`
-			Resolution string `xml:"resolution"` // PT1M, PT60M, PT60M, PT60M...
-			Point      []struct {
-				Text                   string `xml:",chardata"`
-				Position               string `xml:"position"`                 // 1, 2, 3, 4, 5, 6, 7, 8, 9...
-				Quantity               string `xml:"quantity"`                 // 78.39, 75.53, 59.41, 61.2...
-				ImbalancePriceAmount   string `xml:"imbalance_Price.amount"`   // -514.11, -562.40, -548.05...
-				ImbalancePriceCategory string `xml:"imbalance_Price.category"` // A04, A04, A04, A04, A04, ...
-				FinancialPrice         []struct {
-					Text      string `xml:",chardata"`
-					Amount    string `xml:"amount"`    // 464071702.00, 39706488.60...
-					Direction string `xml:"direction"` // A01, A02, A01, A02, A01, ...
-				} `xml:"Financial_Price"`
-				SecondaryQuantity      string `xml:"secondaryQuantity"`        // 0, 0, 0, 18, 0, 0, 0, 27,...
-				ProcurementPriceAmount string `xml:"procurement_Price.amount"` // 605.00, 672.00, 755.00, 7...
-			} `xml:"Point"`
-		} `xml:"Period"`
-		CurrencyUnitName                       string `xml:"currency_Unit.name"`                       // CZK, CZK, CZK, CZK, CZK, ...
-		PriceMeasureUnitName                   string `xml:"price_Measure_Unit.name"`                  // MWH, MWH, MWH, MWH, MWH, ...
-		StandardMarketProductMarketProductType string `xml:"standard_MarketProduct.marketProductType"` // A01, A01
-		TypeMarketAgreementType                string `xml:"type_MarketAgreement.type"`                // A01, A01, A01, A01
-		MktPSRTypePsrType                      string `xml:"mktPSRType.psrType"`                       // A04, A04, A04, A04, A04, ...
-	} `xml:"TimeSeries"`
-	DocStatus struct {
-		Text  string `xml:",chardata"`
-		Value string `xml:"value"` // A01, A02, A01
-	} `xml:"docStatus"`
-	ControlAreaDomainMRID struct {
-		Text         string `xml:",chardata"` // 10YCZ-CEPS-----N, 10YCZ-C...
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"controlArea_Domain.mRID"`
-}
+const (
+	ParameterDocumentType                                             = "documentType"
+	ParameterDocStatus                                                = "docStatus"
+	ParameterProcessType                                              = "processType"
+	ParameterBusinessType                                             = "businessType"
+	ParameterPsrType                                                  = "psrType"
+	ParameterTypeMarketAgreementType                                  = "type_MarketAgreement.type"
+	ParameterContractMarketAgreementType                              = "contract_MarketAgreement.Type"
+	ParameterAuctionType                                              = "auction.Type"
+	ParameterAuctionCategory                                          = "auction.Category"
+	ParameterClassificationSequenceAttributeInstanceComponentPosition = "classificationSequence_AttributeInstanceComponent.Position"
+	ParameterOutBiddingZoneDomain                                     = "outBiddingZone_Domain"
+	ParameterBiddingZoneDomain                                        = "biddingZone_Domain"
+	ParameterControlAreaDomain                                        = "controlArea_Domain"
+	ParameterInDomain                                                 = "in_Domain"
+	ParameterOutDomain                                                = "out_Domain"
+	ParameterAcquiringDomain                                          = "acquiring_Domain"
+	ParameterConnectingDomain                                         = "connecting_Domain"
+	ParameterRegisteredResource                                       = "registeredResource"
+	ParameterTimeInterval                                             = "TimeInterval"
+	ParameterPeriodStart                                              = "periodStart"
+	ParameterPeriodEnd                                                = "periodEnd"
+	ParameterTimeIntervalUpdate                                       = "TimeIntervalUpdate"
+	ParameterPeriodStartUpdate                                        = "PeriodStartUpdate"
+	ParameterPeriodEndUpdate                                          = "PeriodEndUpdate"
+	ParameterSecurityToken                                            = "securityToken"
+)
 
-type UnavailabilityMarketDocument struct {
-	XMLName                     xml.Name `xml:"Unavailability_MarketDocument"`
-	Text                        string   `xml:",chardata"`
-	Xmlns                       string   `xml:"xmlns,attr"`
-	MRID                        string   `xml:"mRID"`                // kjfQMlmtlZVC32VliNsNQg, -...
-	RevisionNumber              string   `xml:"revisionNumber"`      // 2, 1, 3, 3, 3, 3, 3, 2, 2...
-	Type                        string   `xml:"type"`                // A79, A79, A79, A79, A79, ...
-	ProcessProcessType          string   `xml:"process.processType"` // A26, A26, A26, A26, A26, ...
-	CreatedDateTime             string   `xml:"createdDateTime"`     // 2016-05-13T06:19:51Z, 201...
-	SenderMarketParticipantMRID struct {
-		Text         string `xml:",chardata"` // 10X1001A1001A450, 10X1001...
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"sender_MarketParticipant.mRID"`
-	SenderMarketParticipantMarketRoleType string `xml:"sender_MarketParticipant.marketRole.type"` // A32, A32, A32, A32, A32, ...
-	ReceiverMarketParticipantMRID         struct {
-		Text         string `xml:",chardata"` // 10X1001A1001A450, 10X1001...
-		CodingScheme string `xml:"codingScheme,attr"`
-	} `xml:"receiver_MarketParticipant.mRID"`
-	ReceiverMarketParticipantMarketRoleType string `xml:"receiver_MarketParticipant.marketRole.type"` // A33, A33, A33, A33, A33, ...
-	UnavailabilityTimePeriodTimeInterval    struct {
-		Text  string `xml:",chardata"`
-		Start string `xml:"start"` // 2015-11-23T17:50Z, 2015-1...
-		End   string `xml:"end"`   // 2016-05-12T19:51Z, 2016-0...
-	} `xml:"unavailability_Time_Period.timeInterval"`
-	TimeSeries struct {
-		Text                  string `xml:",chardata"`
-		MRID                  string `xml:"mRID"`         // 1, 1, 1, 1, 1, 1, 1, 1, 1...
-		BusinessType          string `xml:"businessType"` // A54, A54, A54, A54, A54, ...
-		BiddingZoneDomainMRID struct {
-			Text         string `xml:",chardata"` // 10YDE-EON------1, 10YDE-E...
-			CodingScheme string `xml:"codingScheme,attr"`
-		} `xml:"biddingZone_Domain.mRID"`
-		StartDateAndOrTimeDate                                          string `xml:"start_DateAndOrTime.date"`   // 2015-11-23, 2015-12-29, 2...
-		StartDateAndOrTimeTime                                          string `xml:"start_DateAndOrTime.time"`   // 17:50:00Z, 19:43:00Z, 07:...
-		EndDateAndOrTimeDate                                            string `xml:"end_DateAndOrTime.date"`     // 2016-05-12, 2016-01-05, 2...
-		EndDateAndOrTimeTime                                            string `xml:"end_DateAndOrTime.time"`     // 19:51:00Z, 19:43:00Z, 16:...
-		QuantityMeasureUnitName                                         string `xml:"quantity_Measure_Unit.name"` // MAW, MAW, MAW, MAW, MAW, ...
-		CurveType                                                       string `xml:"curveType"`                  // A03, A03, A03, A03, A03, ...
-		ProductionRegisteredResourcePSRTypePowerSystemResourcesNominalP struct {
-			Text string `xml:",chardata"` // 113, 156, 864, 144, 144, ...
-			Unit string `xml:"unit,attr"`
-		} `xml:"production_RegisteredResource.pSRType.powerSystemResources.nominalP"`
-		AssetRegisteredResource struct {
-			Text string `xml:",chardata"`
-			MRID struct {
-				Text         string `xml:",chardata"` // 11TD2L000000267O, 11TD2L0...
-				CodingScheme string `xml:"codingScheme,attr"`
-			} `xml:"mRID"`
-			Name                string `xml:"name"`                  // L-155-RIFF-EMDB-AC114, L-...
-			AssetPSRTypePsrType string `xml:"asset_PSRType.psrType"` // B21, B21, B23, B21, B21, ...
-			LocationName        string `xml:"location.name"`         // Riffgat-Emden/Borssum, Bo...
-		} `xml:"Asset_RegisteredResource"`
-		WindPowerFeedinPeriod struct {
-			Text         string `xml:",chardata"`
-			TimeInterval struct {
-				Text  string `xml:",chardata"`
-				Start string `xml:"start"` // 2015-11-23T17:50Z, 2015-1...
-				End   string `xml:"end"`   // 2016-05-12T19:51Z, 2016-0...
-			} `xml:"timeInterval"`
-			Resolution string `xml:"resolution"` // PT1M, PT1M, PT1M, PT1M, P...
-			Point      struct {
-				Text     string `xml:",chardata"`
-				Position string `xml:"position"` // 1, 1, 1, 1, 1, 1, 1, 1, 1...
-				Quantity string `xml:"quantity"` // 0, 80, 545, 142, 141, 141...
-			} `xml:"Point"`
-		} `xml:"WindPowerFeedin_Period"`
-	} `xml:"TimeSeries"`
-	Reason struct {
-		Text string `xml:",chardata"`
-		Code string `xml:"code"` // B18, B18, B18, B18, B18, ...
-	} `xml:"Reason"`
+type ContractMarketAgreementType string
+
+const (
+	ContractMarketAgreementTypeDaily    ContractMarketAgreementType = "A01"
+	ContractMarketAgreementTypeWeekly   ContractMarketAgreementType = "A02"
+	ContractMarketAgreementTypeMonthly  ContractMarketAgreementType = "A03"
+	ContractMarketAgreementTypeYearly   ContractMarketAgreementType = "A04"
+	ContractMarketAgreementTypeTotal    ContractMarketAgreementType = "A05"
+	ContractMarketAgreementTypeLongTerm ContractMarketAgreementType = "A06"
+	ContractMarketAgreementTypeIntraday ContractMarketAgreementType = "A07"
+	ContractMarketAgreementTypeHourly   ContractMarketAgreementType = "A13"
+)
+
+type AuctionType string
+
+const (
+	AuctionTypeImplicit AuctionType = "A01"
+	AuctionTypeExplicit AuctionType = "A02"
+)
+
+type AuctionCategory string
+
+const (
+	AuctionCategoryBase    AuctionCategory = "A01"
+	AuctionCategoryPeak    AuctionCategory = "A02"
+	AuctionCategoryOffPeak AuctionCategory = "A03"
+	AuctionCategoryHourly  AuctionCategory = "A04"
+)
+
+type PsrType string
+
+const (
+	PsrTypeMixed                      PsrType = "A03"
+	PsrTypeGeneration                 PsrType = "A04"
+	PsrTypeLoad                       PsrType = "A05"
+	PsrTypeBiomass                    PsrType = "B01"
+	PsrTypeFossilBrownCoalLignite     PsrType = "B02"
+	PsrTypeFossilCoalDerivedGas       PsrType = "B03"
+	PsrTypeFossilGas                  PsrType = "B04"
+	PsrTypeFossilHardCoal             PsrType = "B05"
+	PsrTypeFossilOil                  PsrType = "B06"
+	PsrTypeFossilOilShale             PsrType = "B07"
+	PsrTypeFossilPeat                 PsrType = "B08"
+	PsrTypeGeothermal                 PsrType = "B09"
+	PsrTypeHydroPumpedStorage         PsrType = "B10"
+	PsrTypeHydroRunOfRiverAndPoundage PsrType = "B11"
+	PsrTypeHydroWaterReservoir        PsrType = "B12"
+	PsrTypeMarine                     PsrType = "B13"
+	PsrTypeNuclear                    PsrType = "B14"
+	PsrTypeOtherRenewable             PsrType = "B15"
+	PsrTypeSolar                      PsrType = "B16"
+	PsrTypeWaste                      PsrType = "B17"
+	PsrTypeWindOffshore               PsrType = "B18"
+	PsrTypeWindOnshore                PsrType = "B19"
+	PsrTypeOther                      PsrType = "B20"
+	PsrTypeACLink                     PsrType = "B21"
+	PsrTypeDCLink                     PsrType = "B22"
+	PsrTypeSubstation                 PsrType = "B23"
+	PsrTypeTransformer                PsrType = "B24"
+)
+
+type BusinessType string
+
+const (
+	BusinessTypeGeneralCapacityInformation           BusinessType = "A25"
+	BusinessTypeAlreadyAllocatedCapacity             BusinessType = "A29"
+	BusinessTypeRequestedCapacity                    BusinessType = "A43"
+	BusinessTypeSystemOperatorRedispatching          BusinessType = "A46"
+	BusinessTypePlannedMaintenance                   BusinessType = "A53"
+	BusinessTypeUnplannedOutage                      BusinessType = "A54"
+	BusinessTypeInternalRedispatch                   BusinessType = "A85"
+	BusinessTypeFrequencyContainmentReserve          BusinessType = "A95"
+	BusinessTypeAutomaticFrequencyRestorationReserve BusinessType = "A96"
+	BusinessTypeManualFrequencyRestorationReserve    BusinessType = "A97"
+	BusinessTypeReplacementReserve                   BusinessType = "A98"
+	BusinessTypeInterconnectorNetworkEvolution       BusinessType = "B01"
+	BusinessTypeInterconnectorNetworkDismantling     BusinessType = "B02"
+	BusinessTypeCounterTrade                         BusinessType = "B03"
+	BusinessTypeCongestionCosts                      BusinessType = "B04"
+	BusinessTypeCapacityAllocated                    BusinessType = "B05"
+	BusinessTypeAuctionRevenue                       BusinessType = "B07"
+	BusinessTypeTotalNominatedCapacity               BusinessType = "B08"
+	BusinessTypeNetPosition                          BusinessType = "B09"
+	BusinessTypeCongestionIncome                     BusinessType = "B10"
+	BusinessTypeProductionUnit                       BusinessType = "B11"
+	BusinessTypeAreaControlError                     BusinessType = "B33"
+	BusinessTypeProcuredCapacity                     BusinessType = "B95"
+	BusinessTypeSharedBalancingReserveCapacity       BusinessType = "C22"
+	BusinessTypeShareOfReserveCapacity               BusinessType = "C23"
+	BusinessTypeActualReserveCapacity                BusinessType = "C24"
+)
+
+type ProcessType string
+
+const (
+	ProcessTypeDayAhead                             ProcessType = "A01"
+	ProcessTypeIntraDayIncremental                  ProcessType = "A02"
+	ProcessTypeRealised                             ProcessType = "A16"
+	ProcessTypeIntradayTotal                        ProcessType = "A18"
+	ProcessTypeWeekAhead                            ProcessType = "A31"
+	ProcessTypeMonthAhead                           ProcessType = "A32"
+	ProcessTypeYearAhead                            ProcessType = "A33"
+	ProcessTypeSynchronisationProcess               ProcessType = "A39"
+	ProcessTypeIntradayProcess                      ProcessType = "A40"
+	ProcessTypeReplacementReserve                   ProcessType = "A46"
+	ProcessTypeManualFrequencyRestorationReserve    ProcessType = "A47"
+	ProcessTypeAutomaticFrequencyRestorationReserve ProcessType = "A51"
+	ProcessTypeFrequencyContainmentReserve          ProcessType = "A52"
+	ProcessTypeFrequencyRestorationReserve          ProcessType = "A56"
+)
+
+type DocStatus string
+
+const (
+	DocStatusIntermediate DocStatus = "A01"
+	DocStatusFinal        DocStatus = "A02"
+	DocStatusActive       DocStatus = "A05"
+	DocStatusCancelled    DocStatus = "A09"
+	DocStatusEstimated    DocStatus = "X01"
+)
+
+type DocumentType string
+
+const (
+	DocumentTypeFinalisedSchedule                        DocumentType = "A09"
+	DocumentTypeAggregatedEnergyDataReport               DocumentType = "A11"
+	DocumentTypeAcquiringSystemOperatorReserveSchedule   DocumentType = "A15"
+	DocumentTypeBidDocument                              DocumentType = "A24"
+	DocumentTypeAllocationResultDocument                 DocumentType = "A25"
+	DocumentTypeCapacityDocument                         DocumentType = "A26"
+	DocumentTypeAgreedCapacity                           DocumentType = "A31"
+	DocumentTypeReserveAllocationResultDocument          DocumentType = "A38"
+	DocumentTypePriceDocument                            DocumentType = "A44"
+	DocumentTypeEstimatedNetTransferCapacity             DocumentType = "A61"
+	DocumentTypeRedispatchNotice                         DocumentType = "A63"
+	DocumentTypeSystemTotalLoad                          DocumentType = "A65"
+	DocumentTypeInstalledGenerationPerType               DocumentType = "A68"
+	DocumentTypeWindAndSolarForecast                     DocumentType = "A69"
+	DocumentTypeLoadForecastMargin                       DocumentType = "A70"
+	DocumentTypeGenerationForecast                       DocumentType = "A71"
+	DocumentTypeReservoirFillingInformation              DocumentType = "A72"
+	DocumentTypeActualGeneration                         DocumentType = "A73"
+	DocumentTypeWindAndSolarGeneration                   DocumentType = "A74"
+	DocumentTypeActualGenerationPerType                  DocumentType = "A75"
+	DocumentTypeLoadUnavailability                       DocumentType = "A76"
+	DocumentTypeProductionUnavailability                 DocumentType = "A77"
+	DocumentTypeTransmissionUnavailability               DocumentType = "A78"
+	DocumentTypeOffshoreGridInfrastructureUnavailability DocumentType = "A79"
+	DocumentTypeGenerationUnavailability                 DocumentType = "A80"
+	DocumentTypeContractedReserves                       DocumentType = "A81"
+	DocumentTypeAcceptedOffers                           DocumentType = "A82"
+	DocumentTypeActivatedBalancingQuantities             DocumentType = "A83"
+	DocumentTypeActivatedBalancingPrices                 DocumentType = "A84"
+	DocumentTypeImbalancePrices                          DocumentType = "A85"
+	DocumentTypeImbalanceVolume                          DocumentType = "A86"
+	DocumentTypeFinancialSituation                       DocumentType = "A87"
+	DocumentTypeCrossBorderBalancing                     DocumentType = "A88"
+	DocumentTypeContractedReservePrices                  DocumentType = "A89"
+	DocumentTypeInterconnectionNetworkExpansion          DocumentType = "A90"
+	DocumentTypeCounterTradeNotice                       DocumentType = "A91"
+	DocumentTypeCongestionCosts                          DocumentType = "A92"
+	DocumentTypeDcLinkCapacity                           DocumentType = "A93"
+	DocumentTypeNonEuAllocations                         DocumentType = "A94"
+	DocumentTypeConfigurationDocument                    DocumentType = "A95"
+	DocumentTypeFlowBasedAllocations                     DocumentType = "B11"
+)
+
+type AreaType string
+
+const (
+	BZN AreaType = "Bidding Zone"
+	BZA AreaType = "Bidding Zone Aggregation"
+	CTA AreaType = "Control Area"
+	MBA AreaType = "Market Balance Area"
+	IBA AreaType = "Imbalance Area"
+	IPA AreaType = "Imbalance Price Area"
+	LFA AreaType = "Load Frequency Control Area"
+	LFB AreaType = "Load Frequency Control Block"
+	REG AreaType = "Region"
+	SCA AreaType = "Scheduling Area"
+	SNA AreaType = "Synchronous Area"
+)
+
+type DomainType = string
+
+const (
+	DomainNIE               DomainType = "10Y1001A1001A016"
+	DomainEE                DomainType = "10Y1001A1001A39I"
+	DomainSE1               DomainType = "10Y1001A1001A44P"
+	DomainSE2               DomainType = "10Y1001A1001A45N"
+	DomainSE3               DomainType = "10Y1001A1001A46L"
+	DomainSE4               DomainType = "10Y1001A1001A47J"
+	DomainNO5               DomainType = "10Y1001A1001A48H"
+	DomainRussianArea       DomainType = "10Y1001A1001A49F"
+	DomainRUKGD             DomainType = "10Y1001A1001A50U"
+	DomainBelarusArea       DomainType = "10Y1001A1001A51S"
+	DomainIESEM             DomainType = "10Y1001A1001A59C"
+	DomainDEATLU            DomainType = "10Y1001A1001A63L"
+	DomainNO1A              DomainType = "10Y1001A1001A64J"
+	DomainDK                DomainType = "10Y1001A1001A65H"
+	DomainITGR              DomainType = "10Y1001A1001A66F"
+	DomainITNorthSI         DomainType = "10Y1001A1001A67D"
+	DomainITNorthCH         DomainType = "10Y1001A1001A68B"
+	DomainITBrindisi        DomainType = "10Y1001A1001A699"
+	DomainITZCentreNorth    DomainType = "10Y1001A1001A70O"
+	DomainITCentreSouth     DomainType = "10Y1001A1001A71M"
+	DomainITZFoggia         DomainType = "10Y1001A1001A72K"
+	DomainITNorth           DomainType = "10Y1001A1001A73I"
+	DomainITZSardinia       DomainType = "10Y1001A1001A74G"
+	DomainITSicily          DomainType = "10Y1001A1001A75E"
+	DomainITZPriolo         DomainType = "10Y1001A1001A76C"
+	DomainITRossano         DomainType = "10Y1001A1001A77A"
+	DomainITZSouth          DomainType = "10Y1001A1001A788"
+	DomainCADenmark         DomainType = "10Y1001A1001A796"
+	DomainITNorthAT         DomainType = "10Y1001A1001A80L"
+	DomainITNorthFR         DomainType = "10Y1001A1001A81J"
+	DomainDELU              DomainType = "10Y1001A1001A82H"
+	DomainDE                DomainType = "10Y1001A1001A83F"
+	DomainITMACRZONENORTH   DomainType = "10Y1001A1001A84D"
+	DomainITMACRZONESOUTH   DomainType = "10Y1001A1001A85B"
+	DomainUADobTPP          DomainType = "10Y1001A1001A869"
+	DomainITMalta           DomainType = "10Y1001A1001A877"
+	DomainITSACOAC          DomainType = "10Y1001A1001A885"
+	DomainITSACODC          DomainType = "10Y1001A1001A893"
+	DomainNordic            DomainType = "10Y1001A1001A91G"
+	DomainUK                DomainType = "10Y1001A1001A92E"
+	DomainMT                DomainType = "10Y1001A1001A93C"
+	DomainMD                DomainType = "10Y1001A1001A990"
+	DomainAM                DomainType = "10Y1001A1001B004"
+	DomainGE                DomainType = "10Y1001A1001B012"
+	DomainAZ                DomainType = "10Y1001A1001B05V"
+	DomainUA                DomainType = "10Y1001C--00003F"
+	DomainUAIPS             DomainType = "10Y1001C--000182"
+	DomainCZDESKLTSE4       DomainType = "10Y1001C--00038X"
+	DomainCORE              DomainType = "10Y1001C--00059P"
+	DomainAFRR              DomainType = "10Y1001C--00090V"
+	DomainSWE               DomainType = "10Y1001C--00095L"
+	DomainITCalabria        DomainType = "10Y1001C--00096J"
+	DomainGBIFA             DomainType = "10Y1001C--00098F"
+	DomainXK                DomainType = "10Y1001C--00100H"
+	DomainIN                DomainType = "10Y1001C--00119X"
+	DomainNO2A              DomainType = "10Y1001C--001219"
+	DomainITALYNORTH        DomainType = "10Y1001C--00137V"
+	DomainGRIT              DomainType = "10Y1001C--00138T"
+	DomainAL                DomainType = "10YAL-KESH-----5"
+	DomainAT                DomainType = "10YAT-APG------L"
+	DomainBA                DomainType = "10YBA-JPCC-----D"
+	DomainBE                DomainType = "10YBE----------2"
+	DomainBG                DomainType = "10YCA-BULGARIA-R"
+	DomainDEDK1LU           DomainType = "10YCB-GERMANY--8"
+	DomainCBRSMKME          DomainType = "10YCB-JIEL-----9"
+	DomainCBPL              DomainType = "10YCB-POLAND---Z"
+	DomainCBSIHRBA          DomainType = "10YCB-SI-HR-BA-3"
+	DomainCH                DomainType = "10YCH-SWISSGRIDZ"
+	DomainME                DomainType = "10YCS-CG-TSO---S"
+	DomainRS                DomainType = "10YCS-SERBIATSOV"
+	DomainCY                DomainType = "10YCY-1001A0003J"
+	DomainCZ                DomainType = "10YCZ-CEPS-----N"
+	DomainDETransnetBW      DomainType = "10YDE-ENBW-----N"
+	DomainDETenneTGER       DomainType = "10YDE-EON------1"
+	DomainDEAmprion         DomainType = "10YDE-RWENET---I"
+	DomainDE50Hertz         DomainType = "10YDE-VE-------2"
+	DomainDK1A              DomainType = "10YDK-1-------AA"
+	DomainDK1               DomainType = "10YDK-1--------W"
+	DomainDK2               DomainType = "10YDK-2--------M"
+	DomainPLCZ              DomainType = "10YDOM-1001A082L"
+	DomainCZDESK            DomainType = "10YDOM-CZ-DE-SKK"
+	DomainLTSE4             DomainType = "10YDOM-PL-SE-LT2"
+	DomainCWE               DomainType = "10YDOM-REGION-1V"
+	DomainES                DomainType = "10YES-REE------0"
+	DomainContinentalEurope DomainType = "10YEU-CONT-SYNC0"
+	DomainFI                DomainType = "10YFI-1--------U"
+	DomainFR                DomainType = "10YFR-RTE------C"
+	DomainGB                DomainType = "10YGB----------A"
+	DomainGR                DomainType = "10YGR-HTSO-----Y"
+	DomainHR                DomainType = "10YHR-HEP------M"
+	DomainHU                DomainType = "10YHU-MAVIR----U"
+	DomainIE                DomainType = "10YIE-1001A00010"
+	DomainIT                DomainType = "10YIT-GRTN-----B"
+	DomainLT                DomainType = "10YLT-1001A0008Q"
+	DomainLU                DomainType = "10YLU-CEGEDEL-NQ"
+	DomainLV                DomainType = "10YLV-1001A00074"
+	DomainMK                DomainType = "10YMK-MEPSO----8"
+	DomainNL                DomainType = "10YNL----------L"
+	DomainNO                DomainType = "10YNO-0--------C"
+	DomainNO1               DomainType = "10YNO-1--------2"
+	DomainNO2               DomainType = "10YNO-2--------T"
+	DomainNO3               DomainType = "10YNO-3--------J"
+	DomainNO4               DomainType = "10YNO-4--------9"
+	DomainPL                DomainType = "10YPL-AREA-----S"
+	DomainPT                DomainType = "10YPT-REN------W"
+	DomainRO                DomainType = "10YRO-TEL------P"
+	DomainSE                DomainType = "10YSE-1--------K"
+	DomainSI                DomainType = "10YSI-ELES-----O"
+	DomainSK                DomainType = "10YSK-SEPS-----K"
+	DomainTR                DomainType = "10YTR-TEIAS----W"
+	DomainUABEI             DomainType = "10YUA-WEPS-----0"
+	DomainGBElecLink        DomainType = "11Y0-0000-0265-K"
+	DomainGBIFA2            DomainType = "17Y0000009369493"
+	DomainDK1NO1            DomainType = "46Y000000000007M"
+	DomainNO2NSL            DomainType = "50Y0JVU59B4JWQCU"
+	DomainBY                DomainType = "BY"
+	DomainRU                DomainType = "RU"
+	DomainIS                DomainType = "IS"
+)
+
+type ResolutionType string
+
+const (
+	ResolutionQuarter  ResolutionType = "PT15M"
+	ResolutionHalfHour ResolutionType = "PT30M"
+	ResolutionHour     ResolutionType = "PT60M"
+	ResolutionDay      ResolutionType = "P1D"
+	ResolutionWeek     ResolutionType = "P7D"
+	ResolutionYear     ResolutionType = "P1Y"
+)
+
+func GetNextInterval(timeInterval time.Time, resolution ResolutionType) time.Time {
+	switch resolution {
+	case ResolutionQuarter:
+		return timeInterval.Add(15 * time.Minute)
+	case ResolutionHalfHour:
+		return timeInterval.Add(30 * time.Minute)
+	case ResolutionHour:
+		return timeInterval.Add(60 * time.Minute)
+	case ResolutionDay:
+		return timeInterval.AddDate(0, 0, 1)
+	case ResolutionWeek:
+		return timeInterval.AddDate(0, 0, 7)
+	case ResolutionYear:
+		return timeInterval.AddDate(1, 0, 0)
+	}
+
+	return timeInterval
 }

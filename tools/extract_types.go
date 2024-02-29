@@ -21,7 +21,7 @@ import (
 // search: ^(\s+//\s(([0-9]|\.)+)\s.*\n)(\s+)//\s(/api.*)$
 // replace: $1$4"$2": "$5",
 
-const GEN_GO_TYPES_FILE = "types.go"
+const GEN_GO_TYPES_FILE = "documents.go"
 
 var sampleRequests = map[string]string{
 	// 4.1.1. Actual Total Load [6.1.A]

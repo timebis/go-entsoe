@@ -317,7 +317,7 @@ func TestGetCapacityAllocatedOutsideEu(t *testing.T) {
 		AuctionTypeExplicit,
 		ContractMarketAgreementTypeDaily,
 		DomainSK,
-		DomainUA,
+		DomainUABEI,
 		genTime("201601012300"),
 		genTime("201601022300"),
 		&auctionCategory,
@@ -474,6 +474,7 @@ func TestActualGenerationOutputPerGenerationUnit(t *testing.T) {
 		genTime("201512302300"),
 		genTime("201512312300"),
 		&psrType,
+		nil,
 	)
 	assert.NotNil(t, doc)
 	assert.Nil(t, err)
