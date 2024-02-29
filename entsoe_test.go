@@ -391,6 +391,7 @@ func TestGetInstalledGenerationCapacityAggregated(t *testing.T) {
 
 // 4.4.2. Installed Generation Capacity per Unit [14.1.B]
 func TestGetInstalledGenerationCapacityPerUnit(t *testing.T) {
+	t.Skip("TODO: always returns \"Unexpected exception, please contact support and provide exception ID.\"")
 	c := NewEntsoeClientFromEnv()
 	psrType := PsrTypeFossilBrownCoalLignite
 	doc, err := c.GetInstalledGenerationCapacityPerUnit(
