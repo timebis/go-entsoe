@@ -5,14 +5,13 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"sort"
-
-	"github.com/sirupsen/logrus"
 )
 
 /*
@@ -203,7 +202,6 @@ var sampleRequests = map[string]string{
 	// 4.7.5. Unavailability of Production Units [15.1.C&D]
 	"4.7.5.": "documentType=A77&businessType=A53&biddingZone_Domain=10YCZ-CEPS-----N&periodStart=201512312300&periodEnd=201612312300",
 }
-var log = logrus.New()
 
 // regex to extract response document
 var re = regexp.MustCompile(`<(.+?)\s+xmlns=.+?>`)
@@ -212,7 +210,7 @@ func main() {
 
 	apiKey := os.Getenv("ENTSOE_API_KEY")
 	if apiKey == "" {
-		log.Fatal("Environment variable ENTSOE_API_KEY with api key not set")
+		log.Fatalln("Environment variable ENTSOE_API_KEY with api key not set")
 	}
 
 	createdDirs := make(map[string]bool)
@@ -225,31 +223,31 @@ func main() {
 
 	for _, key := range keys {
 		value := sampleRequests[key]
-		log.Info("processing request " + key)
+		log.Println("processing request " + key)
 		resp, err := http.Get("https://web-api.tp.entsoe.eu/api?securityToken=" + apiKey + "&" + value)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln(err)
 		}
 		body := resp.Body
 		defer body.Close()
 		bodyBytes, err := io.ReadAll(body)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln(err)
 		}
 
 		contentType := resp.Header.Get("Content-type")
 		if contentType == "application/zip" {
 			zipReader, err := zip.NewReader(bytes.NewReader(bodyBytes), int64(len(bodyBytes)))
 			if err != nil {
-				log.Fatal(err)
+				log.Fatalln(err)
 			}
 
 			// read all the files from zip archive
 			for _, zipFile := range zipReader.File {
-				log.Infof("reading file %s from zipped content", zipFile.Name)
+				log.Printf("reading file %s from zipped content\n", zipFile.Name)
 				unzippedFileBytes, err := readZipFile(zipFile)
 				if err != nil {
-					log.Fatal(err)
+					log.Fatalln(err)
 				}
 				documentType := processFileContent(key+zipFile.Name, unzippedFileBytes)
 				createdDirs[documentType] = true
@@ -261,7 +259,7 @@ func main() {
 			createdDirs[documentType] = true
 		}
 	}
-	log.Info("Run zek...")
+	log.Println("Run zek...")
 
 	genTypeFile := GEN_GO_TYPES_FILE
 	if _, err := os.Stat(genTypeFile); err == nil {
@@ -269,7 +267,7 @@ func main() {
 	}
 	f, err := os.OpenFile(genTypeFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 	defer f.Close()
 	f.Write([]byte("package goentsoe\n\n"))
@@ -287,7 +285,7 @@ func main() {
 		}
 		if filepath.Base(shell) == shell {
 			if lp, err := exec.LookPath(shell); err != nil {
-				log.Fatal(err)
+				log.Fatalln(err)
 			} else {
 				cmd.Path = lp
 			}
@@ -295,17 +293,17 @@ func main() {
 
 		err = cmd.Run()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln(err)
 		}
 		f.Write(cmdOutput.Bytes())
 	}
-	log.Info("FINISHED")
+	log.Println("FINISHED")
 }
 
 func readZipFile(zf *zip.File) ([]byte, error) {
 	f, err := zf.Open()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 	defer f.Close()
 	return io.ReadAll(f)
@@ -315,14 +313,14 @@ func processFileContent(fileName string, content []byte) string {
 	matches := re.FindStringSubmatch(string(content))
 	if matches == nil || len(matches) != 2 {
 		fmt.Println(string(content))
-		log.Fatal("Detect more than one document")
+		log.Fatalln("Detect more than one document")
 	}
 	documentType := matches[1]
 	os.MkdirAll(documentType, os.ModePerm)
 
 	err := os.WriteFile(filepath.Join(documentType, fileName), content, 0644)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 	return documentType
 }

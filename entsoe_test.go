@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/openlyinc/pointy"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -165,6 +164,7 @@ func TestExplicitAllocationInformationCapacity(t *testing.T) {
 	t.Skip("TODO: always returns \"No matching data found for Data item Explicit Allocations\"")
 	c := NewEntsoeClientFromEnv()
 	auctionCategory := AuctionCategoryBase
+	classificationSequenceAttributeInstanceComponentPosition := 1
 	doc, err := c.GetExplicitAllocationInformation(
 		BusinessTypeCapacityAllocated,
 		ContractMarketAgreementTypeDaily,
@@ -173,7 +173,7 @@ func TestExplicitAllocationInformationCapacity(t *testing.T) {
 		genTime("201601012300"),
 		genTime("201601022300"),
 		&auctionCategory,
-		pointy.Int(1),
+		&classificationSequenceAttributeInstanceComponentPosition,
 	)
 	assert.NotNil(t, doc)
 	assert.Nil(t, err)
@@ -312,6 +312,7 @@ func TestGetPhysicalFlows(t *testing.T) {
 func TestGetCapacityAllocatedOutsideEu(t *testing.T) {
 	c := NewEntsoeClientFromEnv()
 	auctionCategory := AuctionCategoryHourly
+	classificationSequenceAttributeInstanceComponentPosition := 1
 	doc, err := c.GetCapacityAllocatedOutsideEu(
 		AuctionTypeExplicit,
 		ContractMarketAgreementTypeDaily,
@@ -320,7 +321,7 @@ func TestGetCapacityAllocatedOutsideEu(t *testing.T) {
 		genTime("201601012300"),
 		genTime("201601022300"),
 		&auctionCategory,
-		pointy.Int(1),
+		&classificationSequenceAttributeInstanceComponentPosition,
 	)
 	assert.NotNil(t, doc)
 	assert.Nil(t, err)
