@@ -270,7 +270,7 @@ func main() {
 		log.Fatalln(err)
 	}
 	defer f.Close()
-	f.Write([]byte("package goentsoe\n\n"))
+	f.Write([]byte("package entsoe\n\n"))
 	f.Write([]byte("import \"encoding/xml\"\n\n"))
 
 	for dir := range createdDirs {

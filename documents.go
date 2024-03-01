@@ -1,4 +1,4 @@
-package goentsoe
+package entsoe
 
 import "encoding/xml"
 

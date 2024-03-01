@@ -1,6 +1,6 @@
 //go:generate go run ./tools/extract_types.go
 
-package goentsoe
+package entsoe
 
 import (
 	"encoding/xml"
