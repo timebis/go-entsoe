@@ -1,7 +1,5 @@
 package goentsoe
 
-import "time"
-
 type Parameter string
 
 const (
@@ -348,22 +346,3 @@ const (
 	ResolutionWeek     ResolutionType = "P7D"
 	ResolutionYear     ResolutionType = "P1Y"
 )
-
-func GetNextInterval(timeInterval time.Time, resolution ResolutionType) time.Time {
-	switch resolution {
-	case ResolutionQuarter:
-		return timeInterval.Add(15 * time.Minute)
-	case ResolutionHalfHour:
-		return timeInterval.Add(30 * time.Minute)
-	case ResolutionHour:
-		return timeInterval.Add(60 * time.Minute)
-	case ResolutionDay:
-		return timeInterval.AddDate(0, 0, 1)
-	case ResolutionWeek:
-		return timeInterval.AddDate(0, 0, 7)
-	case ResolutionYear:
-		return timeInterval.AddDate(1, 0, 0)
-	}
-
-	return timeInterval
-}

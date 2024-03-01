@@ -41,6 +41,31 @@ func NewEntsoeClientFromEnv() *EntsoeClient {
 	return &c
 }
 
+// Helper functions
+
+var durations = map[ResolutionType]time.Duration{
+	ResolutionQuarter:  15 * time.Minute,
+	ResolutionHalfHour: 30 * time.Minute,
+	ResolutionHour:     time.Hour,
+}
+
+func GetPointTime(start time.Time, position int, resolution ResolutionType) time.Time {
+	offset := position - 1
+
+	switch resolution {
+	case ResolutionQuarter, ResolutionHalfHour, ResolutionHour:
+		return start.Add(time.Duration(offset) * durations[resolution])
+	case ResolutionDay:
+		return start.AddDate(0, 0, offset)
+	case ResolutionWeek:
+		return start.AddDate(0, 0, 7*offset)
+	case ResolutionYear:
+		return start.AddDate(offset, 0, 0)
+	}
+
+	return time.Time{}
+}
+
 // 4.1. Load domain
 
 // 4.1.1. Actual Total Load [6.1.A]
