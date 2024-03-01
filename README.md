@@ -19,7 +19,7 @@ now := time.Now()
 from := now.Truncate(24 * time.Hour)
 to := from.AddDate(0, 0, 1)
 
-doc, err := client.GetDayAheadPrices(DomainBE, from, to)
+doc, err := client.GetDayAheadPrices(entsoe.DomainBE, from, to)
 ```
 
 ### Day Ahead Prices
