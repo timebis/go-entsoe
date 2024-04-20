@@ -77,8 +77,9 @@ func (d *DayAhead) run() {
 }
 
 func (d *DayAhead) nextUpdate() time.Duration {
-	// Day-ahead prices for the next day are available at noon UTC
-	next := time.Date(d.lastUpdate.Year(), d.lastUpdate.Month(), d.lastUpdate.Day(), 12, 5, 0, 0, time.UTC)
+	// Day-ahead prices for the next day are available no later than one hour after gate closure (noon CET)
+	loc, _ := time.LoadLocation("Europe/Brussels")
+	next := time.Date(d.lastUpdate.Year(), d.lastUpdate.Month(), d.lastUpdate.Day(), 13, 0, 0, 0, loc)
 
 	now := time.Now().UTC()
 	if now.After(next) {
