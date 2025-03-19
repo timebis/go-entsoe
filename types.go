@@ -216,7 +216,7 @@ const (
 type DomainType = string
 
 const (
-	DomainNIE               DomainType = "10Y1001A1001A016"
+	DomainNIR               DomainType = "10Y1001A1001A016"
 	DomainEE                DomainType = "10Y1001A1001A39I"
 	DomainSE1               DomainType = "10Y1001A1001A44P"
 	DomainSE2               DomainType = "10Y1001A1001A45N"
@@ -293,7 +293,7 @@ const (
 	DomainDEAmprion         DomainType = "10YDE-RWENET---I"
 	DomainDE50Hertz         DomainType = "10YDE-VE-------2"
 	DomainDK1A              DomainType = "10YDK-1-------AA"
-	DomainDK1               DomainType = "10YDK-1--------W"
+	DomainDK1               DomainType = "10YDK-1--------W" 
 	DomainDK2               DomainType = "10YDK-2--------M"
 	DomainPLCZ              DomainType = "10YDOM-1001A082L"
 	DomainCZDESK            DomainType = "10YDOM-CZ-DE-SKK"
