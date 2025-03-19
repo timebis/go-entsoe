@@ -1,4 +1,4 @@
-module github.com/tomdegryse/go-entsoe
+module github.com/visendi-labs/go-entsoe
 
 go 1.16
 
