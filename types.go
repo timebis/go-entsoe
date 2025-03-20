@@ -91,6 +91,37 @@ const (
 	PsrTypeTransformer                PsrType = "B24"
 )
 
+// AllPsrTypes contains all PsrType constants
+var AllPsrTypes = []PsrType{
+	PsrTypeMixed,
+	PsrTypeGeneration,
+	PsrTypeLoad,
+	PsrTypeBiomass,
+	PsrTypeFossilBrownCoalLignite,
+	PsrTypeFossilCoalDerivedGas,
+	PsrTypeFossilGas,
+	PsrTypeFossilHardCoal,
+	PsrTypeFossilOil,
+	PsrTypeFossilOilShale,
+	PsrTypeFossilPeat,
+	PsrTypeGeothermal,
+	PsrTypeHydroPumpedStorage,
+	PsrTypeHydroRunOfRiverAndPoundage,
+	PsrTypeHydroWaterReservoir,
+	PsrTypeMarine,
+	PsrTypeNuclear,
+	PsrTypeOtherRenewable,
+	PsrTypeSolar,
+	PsrTypeWaste,
+	PsrTypeWindOffshore,
+	PsrTypeWindOnshore,
+	PsrTypeOther,
+	PsrTypeACLink,
+	PsrTypeDCLink,
+	PsrTypeSubstation,
+	PsrTypeTransformer,
+}
+
 type BusinessType string
 
 const (
@@ -346,3 +377,4 @@ const (
 	ResolutionWeek     ResolutionType = "P7D"
 	ResolutionYear     ResolutionType = "P1Y"
 )
+
