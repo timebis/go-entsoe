@@ -656,7 +656,7 @@ func (c *EntsoeClient) requestGLMarketDocument(params url.Values) (*GLMarketDocu
 	var doc GLMarketDocument
 	err = xml.Unmarshal(data, &doc)
 	if err != nil {
-        return nil, fmt.Errorf("Error parsing data: %w\n%s", err, data)
+        return nil, generateParsingError(data)
 	}
 	return &doc, nil
 }
@@ -671,7 +671,7 @@ func (c *EntsoeClient) requestTransmissionNetworkMarketDocument(params url.Value
 	var doc TransmissionNetworkMarketDocument
 	err = xml.Unmarshal(data, &doc)
 	if err != nil {
-        return nil, fmt.Errorf("Error parsing data: %w\n%s", err, data)
+        return nil, generateParsingError(data)
 	}
 	return &doc, nil
 }
@@ -686,7 +686,7 @@ func (c *EntsoeClient) requestPublicationMarketDocument(params url.Values) (*Pub
 	var doc PublicationMarketDocument
 	err = xml.Unmarshal(data, &doc)
 	if err != nil {
-        return nil, fmt.Errorf("Error parsing data: %w\n%s", err, data)
+        return nil, generateParsingError(data)
 	}
 	return &doc, nil
 }
@@ -701,7 +701,24 @@ func (c *EntsoeClient) requestCriticalNetworkElementMarketDocument(params url.Va
 	var doc CriticalNetworkElementMarketDocument
 	err = xml.Unmarshal(data, &doc)
 	if err != nil {
-        return nil, fmt.Errorf("Error parsing data: %w\n%s", err, data)
+        return nil, generateParsingError(data)
+	}
+	return &doc, nil
+}
+
+func generateParsingError(data []byte) error {
+    d, err := parseAcknowledgementMarketDocument(data)
+    if err != nil {
+        return err
+    }
+    return fmt.Errorf("Error requesting data: %s", d.Reason.Text)
+}
+
+func parseAcknowledgementMarketDocument(data []byte) (*AcknowledgementMarketDocument, error) {
+    var doc AcknowledgementMarketDocument
+    err := xml.Unmarshal(data, &doc)
+	if err != nil {
+        return nil, fmt.Errorf("Error parsing AcknowledgementMarketDocument: %w\n%s", err, data)
 	}
 	return &doc, nil
 }
@@ -719,3 +736,4 @@ func (c *EntsoeClient) sendRequest(paramStr string) ([]byte, error) {
 	}
 	return bodyBytes, nil
 }
+
