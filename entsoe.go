@@ -4,6 +4,7 @@ package entsoe
 
 import (
 	"encoding/xml"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -655,7 +656,7 @@ func (c *EntsoeClient) requestGLMarketDocument(params url.Values) (*GLMarketDocu
 	var doc GLMarketDocument
 	err = xml.Unmarshal(data, &doc)
 	if err != nil {
-		return nil, err
+        return nil, fmt.Errorf("Error parsing data: %w\n%s", err, data)
 	}
 	return &doc, nil
 }
@@ -670,7 +671,7 @@ func (c *EntsoeClient) requestTransmissionNetworkMarketDocument(params url.Value
 	var doc TransmissionNetworkMarketDocument
 	err = xml.Unmarshal(data, &doc)
 	if err != nil {
-		return nil, err
+        return nil, fmt.Errorf("Error parsing data: %w\n%s", err, data)
 	}
 	return &doc, nil
 }
@@ -685,7 +686,7 @@ func (c *EntsoeClient) requestPublicationMarketDocument(params url.Values) (*Pub
 	var doc PublicationMarketDocument
 	err = xml.Unmarshal(data, &doc)
 	if err != nil {
-		return nil, err
+        return nil, fmt.Errorf("Error parsing data: %w\n%s", err, data)
 	}
 	return &doc, nil
 }
@@ -700,7 +701,7 @@ func (c *EntsoeClient) requestCriticalNetworkElementMarketDocument(params url.Va
 	var doc CriticalNetworkElementMarketDocument
 	err = xml.Unmarshal(data, &doc)
 	if err != nil {
-		return nil, err
+        return nil, fmt.Errorf("Error parsing data: %w\n%s", err, data)
 	}
 	return &doc, nil
 }
