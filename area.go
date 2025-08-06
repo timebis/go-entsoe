@@ -67,6 +67,35 @@ var domains = map[Area]DomainType{
 	Latvia:    DomainLV,
 }
 
+var contryNames = map[Area]string{
+	// Central Western Europe
+	Austria:     "Austria",
+	Belgium:     "Belgium",
+	France:      "France",
+	Germany:     "Germany",
+	Netherlands: "Netherlands",
+	Poland:      "Poland",
+
+	// Nordic
+	Denmark1: "Denmark",
+	Denmark2: "Denmark",
+	Finland:  "Finland",
+	Norway1:  "Norway",
+	Norway2:  "Norway",
+	Norway3:  "Norway",
+	Norway4:  "Norway",
+	Norway5:  "Norway",
+	Sweden1:  "Sweden",
+	Sweden2:  "Sweden",
+	Sweden3:  "Sweden",
+	Sweden4:  "Sweden",
+
+	// Baltic
+	Estonia:   "Estonia",
+	Lithuania: "Lithuania",
+	Latvia:    "Latvia",
+}
+
 func domain(area string) (DomainType, error) {
 	zone := Area(strings.ToUpper(area))
 
@@ -76,4 +105,15 @@ func domain(area string) (DomainType, error) {
 	}
 
 	return domain, nil
+}
+
+func fullName(area string) (string, error) {
+	zone := Area(strings.ToUpper(area))
+
+	fullName, ok := contryNames[zone]
+	if !ok {
+		return "", fmt.Errorf("unsupported area %s", area)
+	}
+
+	return fullName, nil
 }
