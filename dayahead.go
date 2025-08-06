@@ -3,7 +3,6 @@ package entsoe
 import (
 	"fmt"
 	"strconv"
-	"sync"
 	"time"
 )
 
@@ -11,17 +10,17 @@ type DayAhead struct {
 	client     *EntsoeClient
 	domain     DomainType
 	resolution time.Duration
-	prices     map[int64]float64
+	prices     []DayAheadElement
 	lastUpdate time.Time
-	mu         sync.RWMutex
 }
 
-func NewDayAhead(area, token string, resolution time.Duration) (*DayAhead, error) {
-	if token == "" {
-		return nil, fmt.Errorf("missing token")
-	}
+type DayAheadElement struct {
+	Time              time.Time
+	Price_eur_per_MWh float64
+}
 
-	domain, err := domain(area)
+func NewDayAhead(area Area, client *EntsoeClient, resolution time.Duration) (*DayAhead, error) {
+	domain, err := domain(string(area))
 	if err != nil {
 		return nil, err
 	}
@@ -31,63 +30,47 @@ func NewDayAhead(area, token string, resolution time.Duration) (*DayAhead, error
 	}
 
 	d := &DayAhead{
-		client:     NewEntsoeClient(token),
+		client:     client,
 		domain:     domain,
 		resolution: resolution,
 		lastUpdate: time.Time{},
 	}
 
-	go d.run()
-
 	return d, nil
 }
 
-func (d *DayAhead) GetDayAheadPrice(u time.Time) (float64, error) {
-	d.mu.RLock()
-	defer d.mu.RUnlock()
+func (d *DayAhead) Fetch(from, to time.Time) ([]DayAheadElement, error) {
 
-	price, ok := d.prices[u.Truncate(d.resolution).Unix()]
-	if !ok {
-		return 0, fmt.Errorf("no price point found for time %s", u)
+	for to.Sub(from) > 30*24*time.Hour {
+		fromChunk := to.Add(-30 * 24 * time.Hour)
+		d.fetch(fromChunk, to)
+		to = fromChunk
 	}
 
-	return price, nil
+	d.fetch(from, to)
+
+	return d.prices, nil
 }
 
-func (d *DayAhead) run() {
-	for {
-		now := time.Now()
-		from := now.Truncate(24 * time.Hour)
-		to := from.AddDate(0, 0, 1)
-
-		doc, err := d.client.GetDayAheadPrices(d.domain, from, to)
-		if err == nil {
-			prices, lastUpdate, err := d.parsePublicationMarketDocument(doc)
-			if err == nil {
-				d.mu.Lock()
-				d.prices = prices
-				d.lastUpdate = lastUpdate
-				d.mu.Unlock()
-			}
+func (d *DayAhead) fetch(from, to time.Time) {
+	fmt.Printf("Fetching from %s to %s\n", from.Format("2006-01-02"), to.Format("2006-01-02"))
+	doc, err := d.client.GetDayAheadPrices(d.domain, from, to)
+	if err == nil {
+		prices, lastUpdate, err := d.parsePublicationMarketDocument(doc)
+		if err != nil {
+			fmt.Printf("Error parsing publication market document: %s\n", err)
+			return
 		}
 
-		timer := time.NewTimer(d.nextUpdate())
-		<-timer.C
+		for k, v := range prices {
+			d.prices = append(d.prices, DayAheadElement{
+				Time:              time.Unix(k, 0),
+				Price_eur_per_MWh: v,
+			})
+		}
+
+		d.lastUpdate = lastUpdate
 	}
-}
-
-func (d *DayAhead) nextUpdate() time.Duration {
-	// Day-ahead prices for the next day are available no later than one hour after gate closure (noon CET)
-	loc, _ := time.LoadLocation("Europe/Paris")
-	next := time.Date(d.lastUpdate.Year(), d.lastUpdate.Month(), d.lastUpdate.Day(), 13, 0, 0, 0, loc)
-
-	now := time.Now().UTC()
-	if now.After(next) {
-		// New data should already be available, retry in 15 minutes
-		return 15 * time.Minute
-	}
-
-	return next.Sub(now)
 }
 
 func (d *DayAhead) parsePublicationMarketDocument(doc *PublicationMarketDocument) (map[int64]float64, time.Time, error) {
