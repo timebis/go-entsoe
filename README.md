@@ -6,6 +6,10 @@ Lightweight Go wrapper around the ENTSO-E Transparency Platform RESTful API
 
 ENTSO-E, the European Network of Transmission System Operators, represents 39 electricity transmission system operators (TSOs) from 35 countries across Europe. The ENTSO-E Transparency Platform aims to provide free, continuous access to pan-European electricity market data for all users, across six main categories: Load, Generation, Transmission, Balancing, Outages and Congestion Management.
 
+### API Token
+One should create an account on the [ENTSO-E Transparency Platform](https://transparency.entsoe.eu/usrm/user/myAccountSettings) and get an API token.  
+This token could be stored in the `.env` file or as an environment variable.
+
 ## Usage
 
 ### Basic usage
