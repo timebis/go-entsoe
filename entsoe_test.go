@@ -231,7 +231,7 @@ func TestGetTotalCapacityAlreadyAllocated(t *testing.T) {
 func TestGetDayAheadPrices(t *testing.T) {
 	c := NewEntsoeClientFromEnv()
 	doc, err := c.GetDayAheadPrices(
-		DomainCZ,
+		DomainFR,
 		genTime("201512312300"),
 		genTime("201612312300"),
 	)

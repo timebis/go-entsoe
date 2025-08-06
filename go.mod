@@ -1,4 +1,4 @@
-module github.com/visendi-labs/go-entsoe
+module github.com/timebis/go-entsoe
 
 go 1.16
 
