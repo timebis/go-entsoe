@@ -14,25 +14,25 @@ This token could be stored in the `.env` file or as an environment variable.
 
 ### Basic usage
 
-Request day ahead prices for the next 24h:
+Request day ahead prices from the last 7 days:
 
-```
-client := entsoe.NewEntsoeClient("token")
+```go
+	client := entsoe.NewEntsoeClientFromEnv()
 
-now := time.Now()
-from := now.Truncate(24 * time.Hour)
-to := from.AddDate(0, 0, 1)
+	dayahead, err := entsoe.NewDayAhead(entsoe.France, client, time.Hour)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
 
-doc, err := client.GetDayAheadPrices(entsoe.DomainBE, from, to)
-```
+	prices, err := dayahead.Fetch(time.Now().Add(-7*24*time.Hour), time.Now())
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
 
-### Day Ahead Prices
+	for _, p := range prices {
+		fmt.Printf("%s: %f\n", p.Time.Format("2006-01-02 15:04:05"), p.Price_eur_per_MWh)
+	}
 
-Automatically fetch day-ahead prices at noon every day:
-
-```
-dayAhead, err := entsoe.NewDayAhead("BE", "token", time.Hour)
-
-now := time.Now()
-price, err := dayAhead.GetDayAheadPrice(now)
 ```

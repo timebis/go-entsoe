@@ -324,7 +324,7 @@ const (
 	DomainDEAmprion         DomainType = "10YDE-RWENET---I"
 	DomainDE50Hertz         DomainType = "10YDE-VE-------2"
 	DomainDK1A              DomainType = "10YDK-1-------AA"
-	DomainDK1               DomainType = "10YDK-1--------W" 
+	DomainDK1               DomainType = "10YDK-1--------W"
 	DomainDK2               DomainType = "10YDK-2--------M"
 	DomainPLCZ              DomainType = "10YDOM-1001A082L"
 	DomainCZDESK            DomainType = "10YDOM-CZ-DE-SKK"
@@ -377,4 +377,3 @@ const (
 	ResolutionWeek     ResolutionType = "P7D"
 	ResolutionYear     ResolutionType = "P1Y"
 )
-
