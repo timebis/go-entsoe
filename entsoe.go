@@ -6,7 +6,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -35,12 +34,12 @@ func NewEntsoeClientFromEnv() *EntsoeClient {
 
 	err := godotenv.Load(".env")
 	if err != nil {
-		fmt.Printf("Error loading .env file: %+v", err)
+		logger.Warn().Err(err).Msg("Error loading .env file")
 	}
 
 	apiKey := os.Getenv("ENTSOE_API_KEY")
 	if apiKey == "" {
-		log.Fatal("Environment variable ENTSOE_API_KEY with api key not set")
+		logger.Fatal().Msg("Environment variable ENTSOE_API_KEY with api key not set")
 	}
 
 	c := EntsoeClient{

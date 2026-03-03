@@ -53,24 +53,31 @@ func (d *DayAhead) Fetch(from, to time.Time) ([]DayAheadElement, error) {
 }
 
 func (d *DayAhead) fetch(from, to time.Time) {
-	fmt.Printf("Fetching from %s to %s\n", from.Format("2006-01-02"), to.Format("2006-01-02"))
+	logger.Info().
+		Str("from", from.Format("2006-01-02")).
+		Str("to", to.Format("2006-01-02")).
+		Msg("Fetching day-ahead prices")
+
 	doc, err := d.client.GetDayAheadPrices(d.domain, from, to)
-	if err == nil {
-		prices, lastUpdate, err := d.parsePublicationMarketDocument(doc)
-		if err != nil {
-			fmt.Printf("Error parsing publication market document: %s\n", err)
-			return
-		}
-
-		for k, v := range prices {
-			d.prices = append(d.prices, DayAheadElement{
-				Time:              time.Unix(k, 0),
-				Price_eur_per_MWh: v,
-			})
-		}
-
-		d.lastUpdate = lastUpdate
+	if err != nil {
+		logger.Error().Err(err).Msg("Error fetching day-ahead prices")
+		return
 	}
+
+	prices, lastUpdate, err := d.parsePublicationMarketDocument(doc)
+	if err != nil {
+		logger.Error().Err(err).Msg("Error parsing publication market document")
+		return
+	}
+
+	for k, v := range prices {
+		d.prices = append(d.prices, DayAheadElement{
+			Time:              time.Unix(k, 0),
+			Price_eur_per_MWh: v,
+		})
+	}
+
+	d.lastUpdate = lastUpdate
 }
 
 func (d *DayAhead) parsePublicationMarketDocument(doc *PublicationMarketDocument) (map[int64]float64, time.Time, error) {

@@ -232,8 +232,8 @@ func TestGetDayAheadPrices(t *testing.T) {
 	c := NewEntsoeClientFromEnv()
 	doc, err := c.GetDayAheadPrices(
 		DomainFR,
-		genTime("201512312300"),
-		genTime("201612312300"),
+		genTime("202603012300"),
+		genTime("202603032300"),
 	)
 	assert.NotNil(t, doc)
 	assert.Nil(t, err)
