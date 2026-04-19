@@ -108,6 +108,12 @@ func (d *DayAhead) parsePublicationMarketDocument(doc *PublicationMarketDocument
 			return nil, time.Time{}, err
 		}
 
+		// skip secondary/local auction series (position 2+); keep SDAC (position 1 or unset)
+		// some zones (DE_LU, AT, DK2) publish both SDAC and local auction prices under A01
+		if pos := timeSeries.ClassificationSequenceAttributeInstanceComponentPosition; pos != "" && pos != "1" {
+			continue
+		}
+
 		logger.Debug().
 			Str("resolution", string(resolution)).
 			Str("start", period.TimeInterval.Start).
