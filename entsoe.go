@@ -341,9 +341,10 @@ func (c *EntsoeClient) GetTotalCapacityAlreadyAllocated(
 }
 
 // 4.2.10. Day Ahead Prices [12.1.D]
-// GetDayAheadPrices returns SDAC (Single Day-Ahead Coupling) prices — position 1.
-// Some zones (e.g. DE_LU, AT) also publish local auction prices under position 2;
-// fixing position=1 ensures only the pan-European official price is returned.
+// GetDayAheadPrices returns SDAC (Single Day-Ahead Coupling) prices.
+// DE_LU and AT also publish local auction prices under position 2; for those
+// zones position=1 is required to select only the pan-European official price.
+// Other zones only publish a single series and must not have position set.
 // Resolution was PT60M before 2025-10-01, PT15M after, aligned on Europe/Amsterdam business days.
 func (c *EntsoeClient) GetDayAheadPrices(
 	domain DomainType,
@@ -353,7 +354,9 @@ func (c *EntsoeClient) GetDayAheadPrices(
 	params := url.Values{}
 	params.Add(ParameterDocumentType, string(DocumentTypePriceDocument))
 	params.Add(ParameterContractMarketAgreementType, string(ContractMarketAgreementTypeDaily))
-	params.Add(ParameterClassificationSequenceAttributeInstanceComponentPosition, "1")
+	if domain == DomainDELU || domain == DomainAT {
+		params.Add(ParameterClassificationSequenceAttributeInstanceComponentPosition, "1")
+	}
 	params.Add(ParameterInDomain, string(domain))
 	params.Add(ParameterOutDomain, string(domain))
 	params.Add(ParameterPeriodStart, periodStart.UTC().Format(periodLayout))
