@@ -71,7 +71,7 @@ func (d *DayAhead) fetch(from, to time.Time) {
 		if _, dup := existing[k]; dup {
 			for _, p := range d.prices {
 				if p.Time.Unix() == k && p.Price_eur_per_MWh != v {
-					logger.Warn().
+					logger.Error().
 						Time("slot", time.Unix(k, 0)).
 						Float64("existing", p.Price_eur_per_MWh).
 						Float64("conflict", v).
@@ -108,6 +108,19 @@ func (d *DayAhead) parsePublicationMarketDocument(doc *PublicationMarketDocument
 			return nil, time.Time{}, err
 		}
 
+		logger.Debug().
+			Str("resolution", string(resolution)).
+			Str("start", period.TimeInterval.Start).
+			Str("end", period.TimeInterval.End).
+			Int("points", len(period.Point)).
+			Int("slots_per_point", int(step/resolution15m)).
+			Msg("time series")
+
+		if step == 0 {
+			logger.Warn().Str("resolution", string(resolution)).Msg("unknown resolution, skipping time series")
+			continue
+		}
+
 		for _, point := range period.Point {
 			index, err := strconv.ParseInt(point.Position, 10, 64)
 			if err != nil {
@@ -129,6 +142,7 @@ func (d *DayAhead) parsePublicationMarketDocument(doc *PublicationMarketDocument
 					if existing != price {
 						logger.Warn().
 							Time("slot", t).
+							Str("area", timeSeries.InDomainMRID.Text).
 							Float64("existing", existing).
 							Float64("conflict", price).
 							Msg("duplicate slot with different price")
@@ -140,5 +154,38 @@ func (d *DayAhead) parsePublicationMarketDocument(doc *PublicationMarketDocument
 		}
 	}
 
+	backfill(res)
+
 	return res, end, nil
+}
+
+func backfill(res map[int64]float64) {
+	if len(res) == 0 {
+		return
+	}
+
+	var first, last int64
+	for t := range res {
+		if first == 0 || t < first {
+			first = t
+		}
+		if t > last {
+			last = t
+		}
+	}
+
+	step := int64(resolution15m.Seconds())
+	var prevPrice float64
+
+	for t := first; t <= last; t += step {
+		if price, ok := res[t]; ok {
+			prevPrice = price
+		} else {
+			logger.Debug().
+				Time("slot", time.Unix(t, 0)).
+				Float64("backfill_price", prevPrice).
+				Msg("missing slot, backfilling with previous price")
+			res[t] = prevPrice
+		}
+	}
 }
