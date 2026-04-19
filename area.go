@@ -96,6 +96,27 @@ var contryNames = map[Area]string{
 	Latvia:    "Latvia",
 }
 
+var domainToArea map[DomainType]Area
+
+func init() {
+	domainToArea = make(map[DomainType]Area, len(domains))
+	for area, domain := range domains {
+		domainToArea[domain] = area
+	}
+}
+
+func areaName(domain DomainType) string {
+	area, ok := domainToArea[domain]
+	if !ok {
+		return string(domain)
+	}
+	name, ok := contryNames[area]
+	if !ok {
+		return string(area)
+	}
+	return name
+}
+
 func domain(area string) (DomainType, error) {
 	zone := Area(strings.ToUpper(area))
 

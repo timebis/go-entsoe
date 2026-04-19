@@ -348,6 +348,7 @@ func (c *EntsoeClient) GetDayAheadPrices(
 ) (*PublicationMarketDocument, error) {
 	params := url.Values{}
 	params.Add(ParameterDocumentType, string(DocumentTypePriceDocument))
+	params.Add(ParameterContractMarketAgreementType, string(ContractMarketAgreementTypeDaily))
 	params.Add(ParameterInDomain, string(domain))
 	params.Add(ParameterOutDomain, string(domain))
 	params.Add(ParameterPeriodStart, periodStart.UTC().Format(periodLayout))

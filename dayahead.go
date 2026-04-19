@@ -140,9 +140,9 @@ func (d *DayAhead) parsePublicationMarketDocument(doc *PublicationMarketDocument
 				t := pointTime.Add(time.Duration(i) * resolution15m)
 				if existing, exists := res[t.Unix()]; exists {
 					if existing != price {
-						logger.Error().
+						logger.Warn().
 							Time("slot", t).
-							Str("area", timeSeries.InDomainMRID.Text).
+							Str("area", areaName(DomainType(timeSeries.InDomainMRID.Text))).
 							Float64("existing", existing).
 							Float64("conflict", price).
 							Msg("duplicate slot with different price")
