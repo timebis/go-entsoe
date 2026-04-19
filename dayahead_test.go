@@ -32,8 +32,8 @@ func TestDayAheadFetchParis(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	from := time.Date(2025, 3, 1, 0, 0, 0, 0, paris)
-	to := time.Date(2025, 3, 2, 0, 0, 0, 0, paris)
+	from := time.Date(2026, 3, 1, 0, 0, 0, 0, paris)
+	to := time.Date(2026, 3, 2, 0, 0, 0, 0, paris)
 
 	prices, err := da.Fetch(from, to)
 	if err != nil {
@@ -65,8 +65,8 @@ func TestDayAheadFetchLogPoints(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	from := time.Date(2025, 3, 1, 0, 0, 0, 0, time.UTC)
-	to := time.Date(2025, 3, 2, 0, 0, 0, 0, time.UTC)
+	from := time.Date(2026, 3, 1, 0, 0, 0, 0, time.UTC)
+	to := time.Date(2026, 3, 2, 0, 0, 0, 0, time.UTC)
 
 	prices, err := da.Fetch(from, to)
 	if err != nil {
@@ -115,6 +115,46 @@ func TestDayAheadFetchHalfHourResolution(t *testing.T) {
 	}
 
 	log.Info().Int("count", len(prices)).Str("area", "Belgium").Msg("fetched prices")
+}
+
+func TestDayAheadBackfill(t *testing.T) {
+	client := entsoe.NewEntsoeClientFromEnv()
+
+	da, err := entsoe.NewDayAhead(entsoe.France, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	paris, err := time.LoadLocation("Europe/Paris")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	from := time.Date(2026, 3, 1, 0, 0, 0, 0, paris)
+	to := time.Date(2026, 3, 2, 0, 0, 0, 0, paris)
+
+	prices, err := da.Fetch(from, to)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	sort.Slice(prices, func(i, j int) bool {
+		return prices[i].Time.Before(prices[j].Time)
+	})
+
+	// verify no gaps: every consecutive pair must be exactly 15 min apart
+	for i := 1; i < len(prices); i++ {
+		gap := prices[i].Time.Sub(prices[i-1].Time)
+		if gap != 15*time.Minute {
+			t.Errorf("gap detected between %s and %s (%s)",
+				prices[i-1].Time.In(paris).Format("2006-01-02 15:04"),
+				prices[i].Time.In(paris).Format("2006-01-02 15:04"),
+				gap,
+			)
+		}
+	}
+
+	log.Info().Int("count", len(prices)).Msg("no gaps found after backfill")
 }
 
 func TestDayAheadInvalidArea(t *testing.T) {

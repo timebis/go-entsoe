@@ -12,4 +12,4 @@ var logger = zerolog.New(
 		Out:        os.Stderr,
 		TimeFormat: time.RFC3339,
 	},
-).With().Timestamp().Logger()
+).With().Timestamp().Logger().Level(zerolog.InfoLevel)
