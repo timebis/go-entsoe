@@ -17,7 +17,7 @@ func main() {
 }
 
 func dayahead(client *entsoe.EntsoeClient) {
-	dayahead, err := entsoe.NewDayAhead(entsoe.France, client, time.Hour)
+	dayahead, err := entsoe.NewDayAhead(entsoe.France, client)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return

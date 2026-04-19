@@ -1,15 +1,15 @@
 package entsoe
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 )
 
+const resolution15m = 15 * time.Minute
+
 type DayAhead struct {
 	client     *EntsoeClient
 	domain     DomainType
-	resolution time.Duration
 	prices     []DayAheadElement
 	lastUpdate time.Time
 }
@@ -19,28 +19,20 @@ type DayAheadElement struct {
 	Price_eur_per_MWh float64
 }
 
-func NewDayAhead(area Area, client *EntsoeClient, resolution time.Duration) (*DayAhead, error) {
+func NewDayAhead(area Area, client *EntsoeClient) (*DayAhead, error) {
 	domain, err := domain(string(area))
 	if err != nil {
 		return nil, err
 	}
 
-	if resolution != time.Hour && resolution != 30*time.Minute && resolution != 15*time.Minute {
-		return nil, fmt.Errorf("unsupported resolution %s", resolution)
-	}
-
-	d := &DayAhead{
+	return &DayAhead{
 		client:     client,
 		domain:     domain,
-		resolution: resolution,
 		lastUpdate: time.Time{},
-	}
-
-	return d, nil
+	}, nil
 }
 
 func (d *DayAhead) Fetch(from, to time.Time) ([]DayAheadElement, error) {
-
 	for to.Sub(from) > 30*24*time.Hour {
 		fromChunk := to.Add(-30 * 24 * time.Hour)
 		d.fetch(fromChunk, to)
@@ -70,11 +62,29 @@ func (d *DayAhead) fetch(from, to time.Time) {
 		return
 	}
 
+	// merge into d.prices, deduplicating by timestamp
+	existing := make(map[int64]struct{}, len(d.prices))
+	for _, p := range d.prices {
+		existing[p.Time.Unix()] = struct{}{}
+	}
 	for k, v := range prices {
-		d.prices = append(d.prices, DayAheadElement{
-			Time:              time.Unix(k, 0),
-			Price_eur_per_MWh: v,
-		})
+		if _, dup := existing[k]; dup {
+			for _, p := range d.prices {
+				if p.Time.Unix() == k && p.Price_eur_per_MWh != v {
+					logger.Warn().
+						Time("slot", time.Unix(k, 0)).
+						Float64("existing", p.Price_eur_per_MWh).
+						Float64("conflict", v).
+						Msg("duplicate slot with different price across fetches")
+				}
+			}
+		} else {
+			d.prices = append(d.prices, DayAheadElement{
+				Time:              time.Unix(k, 0),
+				Price_eur_per_MWh: v,
+			})
+			existing[k] = struct{}{}
+		}
 	}
 
 	d.lastUpdate = lastUpdate
@@ -91,19 +101,14 @@ func (d *DayAhead) parsePublicationMarketDocument(doc *PublicationMarketDocument
 	for _, timeSeries := range doc.TimeSeries {
 		period := timeSeries.Period
 		resolution := ResolutionType(period.Resolution)
-
-		if durations[resolution] != d.resolution {
-			// Skip other resolutions
-			continue
-		}
+		step := durations[resolution]
 
 		start, err := time.Parse("2006-01-02T15:04Z", period.TimeInterval.Start)
 		if err != nil {
 			return nil, time.Time{}, err
 		}
 
-		points := period.Point
-		for _, point := range points {
+		for _, point := range period.Point {
 			index, err := strconv.ParseInt(point.Position, 10, 64)
 			if err != nil {
 				return nil, time.Time{}, err
@@ -114,7 +119,24 @@ func (d *DayAhead) parsePublicationMarketDocument(doc *PublicationMarketDocument
 				return nil, time.Time{}, err
 			}
 
-			res[GetPointTime(start, int(index), resolution).Unix()] = price
+			pointTime := GetPointTime(start, int(index), resolution)
+
+			// split coarser points into 15-min slots
+			slots := int(step / resolution15m)
+			for i := 0; i < slots; i++ {
+				t := pointTime.Add(time.Duration(i) * resolution15m)
+				if existing, exists := res[t.Unix()]; exists {
+					if existing != price {
+						logger.Warn().
+							Time("slot", t).
+							Float64("existing", existing).
+							Float64("conflict", price).
+							Msg("duplicate slot with different price")
+					}
+				} else {
+					res[t.Unix()] = price
+				}
+			}
 		}
 	}
 
