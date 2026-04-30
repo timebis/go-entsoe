@@ -32,8 +32,7 @@ func NewEntsoeClient(apiKey string) *EntsoeClient {
 
 func NewEntsoeClientFromEnv() *EntsoeClient {
 
-	err := godotenv.Load(".env")
-	if err != nil {
+	if err := godotenv.Load(".env"); err != nil && !os.IsNotExist(err) {
 		logger.Warn().Err(err).Msg("Error loading .env file")
 	}
 
