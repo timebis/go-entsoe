@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -17,15 +18,30 @@ import (
 
 const (
 	periodLayout = "200601021504"
+
+	// requestTimeout bounds a single call to the Transparency Platform. Without
+	// it the package used http.DefaultClient, which has no timeout: during the
+	// September 2026 maintenance the platform stopped answering rather than
+	// returning 503, and every caller blocked until the OS gave up on the TCP
+	// connection. A caller sweeping several areas stalls for as long as the
+	// platform hangs, so the failure has to be bounded here.
+	requestTimeout = 30 * time.Second
+
+	// maxErrorBodyBytes caps how much of an unparseable response is quoted back
+	// in an error. The platform answers maintenance with a full HTML page, and
+	// embedding it whole put ~300 KB into a single log line.
+	maxErrorBodyBytes = 512
 )
 
 type EntsoeClient struct {
-	apiKey string
+	apiKey     string
+	httpClient *http.Client
 }
 
 func NewEntsoeClient(apiKey string) *EntsoeClient {
 	c := EntsoeClient{
-		apiKey: apiKey,
+		apiKey:     apiKey,
+		httpClient: &http.Client{Timeout: requestTimeout},
 	}
 	return &c
 }
@@ -42,7 +58,8 @@ func NewEntsoeClientFromEnv() *EntsoeClient {
 	}
 
 	c := EntsoeClient{
-		apiKey: apiKey,
+		apiKey:     apiKey,
+		httpClient: &http.Client{Timeout: requestTimeout},
 	}
 	return &c
 }
@@ -727,15 +744,45 @@ func parseAcknowledgementMarketDocument(data []byte) (*AcknowledgementMarketDocu
 	var doc AcknowledgementMarketDocument
 	err := xml.Unmarshal(data, &doc)
 	if err != nil {
-		return nil, fmt.Errorf("Error parsing AcknowledgementMarketDocument: %w\n%s", err, data)
+		return nil, fmt.Errorf("Error parsing AcknowledgementMarketDocument: %w\n%s", err, truncateForError(data))
 	}
 	return &doc, nil
 }
 
+// redactAPIKey rewrites an error so the API key never reaches a log. The
+// message is flattened in the process, which is acceptable: callers log these
+// errors, they do not match on wrapped types.
+func (c *EntsoeClient) redactAPIKey(err error) error {
+	if err == nil || c.apiKey == "" {
+		return err
+	}
+	return fmt.Errorf("%s", strings.ReplaceAll(err.Error(), c.apiKey, "REDACTED"))
+}
+
+// truncateForError renders a response body for inclusion in an error message,
+// keeping it short enough to stay readable in a log line.
+func truncateForError(data []byte) string {
+	if len(data) <= maxErrorBodyBytes {
+		return string(data)
+	}
+	return fmt.Sprintf("%s… (%d bytes total)", data[:maxErrorBodyBytes], len(data))
+}
+
 func (c *EntsoeClient) sendRequest(paramStr string) ([]byte, error) {
-	resp, err := http.Get("https://web-api.tp.entsoe.eu/api?securityToken=" + c.apiKey + "&" + paramStr)
+	// A zero-value EntsoeClient built outside the constructors would carry no
+	// client at all, so fall back to a bounded one rather than to the unbounded
+	// http.DefaultClient.
+	httpClient := c.httpClient
+	if httpClient == nil {
+		httpClient = &http.Client{Timeout: requestTimeout}
+	}
+
+	resp, err := httpClient.Get("https://web-api.tp.entsoe.eu/api?securityToken=" + c.apiKey + "&" + paramStr)
 	if err != nil {
-		return nil, err
+		// net/http quotes the full URL in its errors, and the API key travels in
+		// the query string, so an unredacted error writes the credential into
+		// every caller's logs.
+		return nil, c.redactAPIKey(err)
 	}
 	body := resp.Body
 	defer body.Close()
